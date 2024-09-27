@@ -96,3 +96,7 @@ Sophomore, Computer Science: Computer Engineering, Idaho
 ### Renn Gilbert
 
 Freshman, Computer Science, Colorado
+
+### Isaac Ly
+
+Freshman, Computer Science, California

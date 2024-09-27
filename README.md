@@ -81,7 +81,7 @@ Let's Go is not just an app, it's a democratic way to make plans! Stay tuned for
 
 Senior, Computer Science, Connecticut
 
-## Connor Groeneweg
+### Connor Groeneweg
 
 M.S. Bridge, Computer Science, Colorado
 

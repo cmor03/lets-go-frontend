@@ -80,3 +80,7 @@ Let's Go is not just an app, it's a democratic way to make plans! Stay tuned for
 ### Colton Morris
 
 Senior, Computer Science, Connecticut
+
+## Connor Groeneweg
+
+M.S. Bridge, Computer Science, Colorado

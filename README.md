@@ -75,7 +75,6 @@ Users can join events created by other users. A future feature will include even
 
 Let's Go is not just an app, it's a democratic way to make plans! Stay tuned for more exciting features as we continue developing.
 
-
 ## Meet the Authors
 
 ### Colton Morris
@@ -92,5 +91,8 @@ Sophomore, Computer Science, Colorado
 
 ### Bryson Cunliffe
 
-Softmore, Computer Science: Computer Engineering, Idaho
+Sophomore, Computer Science: Computer Engineering, Idaho
 
+### Renn Gilbert
+
+Freshman, Computer Science, Colorado

@@ -74,3 +74,7 @@ Users can join events created by other users. A future feature will include even
 ## Join the Movement!
 
 Let's Go is not just an app, it's a democratic way to make plans! Stay tuned for more exciting features as we continue developing.
+
+## Connor Groeneweg
+
+M.S. Bridge, Computer Science, Colorado

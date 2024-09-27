@@ -84,3 +84,7 @@ Senior, Computer Science, Connecticut
 ## Connor Groeneweg
 
 M.S. Bridge, Computer Science, Colorado
+
+### Justin von Rosenberg
+
+Sophomore, Computer Science, Colorado

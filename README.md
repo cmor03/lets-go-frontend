@@ -112,3 +112,7 @@ Freshman, Computer Science, Colorado
 ### Benjamin Frick
 
 Freshman, Computer Science, Colorado
+
+### Evan Moore
+
+Freshman, Computer Science, Texas

@@ -104,3 +104,7 @@ Freshman, Computer Science, California
 ### Fernando Agudo Palacios
 
 Freshman, Computer Science, Colorado
+
+### Benjamin Frick
+
+Freshman, Computer Science, Colorado

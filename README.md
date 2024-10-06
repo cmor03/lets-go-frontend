@@ -105,7 +105,7 @@ Freshman, Computer Science, Colorado
 
 Freshman, Computer Science, California
 
-### Fernando Agudo Palacios
+### Fernando A.
 
 Freshman, Computer Science, Colorado
 

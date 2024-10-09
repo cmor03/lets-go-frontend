@@ -29,6 +29,9 @@ const Signup = () => {
         }
 
         try {
+	    // Erase feedback from prior failed password validation
+	    setFeedback();
+	    
             // Create user with Firebase Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;

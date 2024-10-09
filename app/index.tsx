@@ -39,6 +39,10 @@ export default function Login() {
     router.push('/signup');
   };
 
+  const handleForgotUsername = () => {
+    router.push('/forgot_username');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>LET'S GO</Text>
@@ -50,6 +54,11 @@ export default function Login() {
         autoCapitalize="none"
         keyboardType="email-address"
       />
+      <View style={styles.forgotUsernameContainer}>
+        <TouchableOpacity onPress={handleForgotUsername}>
+          <Text style={styles.forgotUsernameButton}>Forgot Username</Text>
+        </TouchableOpacity>
+      </View>
       <TextInput
         placeholder="Password"
         value={password}
@@ -115,6 +124,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
   },
+  forgotUsernameContainer: {
+    alignItems: 'flex-start',
+    marginHorizontal: 20+15,
+    marginTop: -10,
+    marginBottom: 5,
+  },
   signUpText: {
     fontSize: 16,
     color: '#333',
@@ -123,6 +138,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#ff6347',
     fontWeight: 'bold',
+  },
+  forgotUsernameButton: {
+    fontSize: 12,
+    color: '#28502E',
   },
   errorText: {
     color: 'red',

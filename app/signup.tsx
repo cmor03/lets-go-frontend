@@ -13,17 +13,18 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [birthday, setBirthday] = useState('');
+    const [feedback, setFeedback] = useState('')
     const router = useRouter();
 
     const handleSignup = async () => {
         // Basic password validation
         if (password.length < 6) {
-            Alert.alert('Error', 'Password must be at least 6 characters long.');
+            setFeedback('Password must be at least 6 characters long.');
             return;
         }
 
         if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match.');
+            setFeedback('Passwords do not match.');
             return;
         }
 
@@ -51,6 +52,7 @@ const Signup = () => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>Sign Up</Text>
+            <Text style={styles.feedback}>{feedback}</Text>
 
             <TextInput
                 style={styles.input}
@@ -122,6 +124,10 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderColor: '#ccc',
     },
+    feedback: {
+        fontSize: 18,
+        color: "red",
+    }
 });
 
 export default Signup;

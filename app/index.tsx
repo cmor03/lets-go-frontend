@@ -59,7 +59,7 @@ export default function Login() {
       />
       {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       <View style={styles.buttonContainer}>
-        <Button title={loading ? "Loading..." : "Login"} onPress={handleLogin} disabled={loading} />
+        <Button title={loading ? "Loading..." : "Login"} color="#28502E" onPress={handleLogin} disabled={loading} />
         {loading && <ActivityIndicator style={styles.loadingIndicator} />}
       </View>
       <View style={styles.signUpContainer}>
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#A4C2A8',
   },
   logo: {
     fontFamily: 'sans-serif',
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 40,
-    color: '#ff6347',
+    color: '#28502E',
   },
   title: {
     fontSize: 24,
@@ -117,11 +117,11 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     fontSize: 16,
-    color: '#333',
+    color: '#28502E',
   },
   signUpButton: {
     fontSize: 16,
-    color: '#ff6347',
+    color: '#FC5130',
     fontWeight: 'bold',
   },
   errorText: {

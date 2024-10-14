@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
 import { useRouter } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
   const handleLogin = async () => {
-    if (email === '' || password === '') {
-      setErrorMessage('Please enter email and password');
+    if (identifier === '' || password === '') {
+      setErrorMessage('Please enter username/email and password');
       return;
     }
 
@@ -21,6 +22,24 @@ export default function Login() {
     setErrorMessage('');
 
     try {
+      let email = identifier;
+      
+      // Check if the identifier is a username
+      if (!identifier.includes('@')) {
+        // Get the email associated with the username
+        const usernameDoc = await getDoc(doc(db, 'usernames', identifier));
+        
+        if (!usernameDoc.exists()) {
+          throw new Error('User not found');
+        }
+        
+        const userId = usernameDoc.data().uid;
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        const userData = userDoc.data();
+        if (!userData) throw new Error('User data not found');
+        email = userData.email;
+      }
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       router.push('/events');
@@ -47,12 +66,12 @@ export default function Login() {
     <View style={styles.container}>
       <Text style={styles.logo}>LET'S GO</Text>
       <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
+        placeholder="Username or Email"
+        value={identifier}
+        onChangeText={(text) => setIdentifier(text)}
         style={styles.input}
         autoCapitalize="none"
-        keyboardType="email-address"
+        placeholderTextColor="#B0B0B0"
       />
       <View style={styles.forgotUsernameContainer}>
         <TouchableOpacity onPress={handleForgotUsername}>
@@ -65,12 +84,17 @@ export default function Login() {
         onChangeText={(text) => setPassword(text)}
         style={styles.input}
         secureTextEntry
+        placeholderTextColor="#B0B0B0"
       />
       {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-      <View style={styles.buttonContainer}>
-        <Button title={loading ? "Loading..." : "Login"} onPress={handleLogin} disabled={loading} />
-        {loading && <ActivityIndicator style={styles.loadingIndicator} />}
-      </View>
+      <TouchableOpacity 
+        style={styles.loginButton} 
+        onPress={handleLogin} 
+        disabled={loading}
+      >
+        <Text style={styles.loginButtonText}>{loading ? "Loading..." : "Login"}</Text>
+      </TouchableOpacity>
+      {loading && <ActivityIndicator style={styles.loadingIndicator} color="#007AFF" />}
       <View style={styles.signUpContainer}>
         <Text style={styles.signUpText}>Not a member?</Text>
         <TouchableOpacity onPress={handleSignUp}>
@@ -86,7 +110,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#121212',
   },
   logo: {
     fontFamily: 'sans-serif',
@@ -94,57 +118,63 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 40,
-    color: '#ff6347',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
+    color: '#007AFF',
   },
   input: {
     height: 50,
-    borderColor: 'gray',
+    borderColor: '#1E1E1E',
     borderWidth: 1,
     marginBottom: 15,
     paddingHorizontal: 10,
     borderRadius: 5,
-    backgroundColor: '#fff',
+    backgroundColor: '#1E1E1E',
     marginHorizontal: 20,
+    color: '#FFFFFF',
   },
-  buttonContainer: {
+  loginButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
     marginTop: 20,
-    marginHorizontal: 100,
-    color: '#ff6347',
+    alignSelf: 'center',
+  },
+  loginButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   loadingIndicator: {
     marginTop: 10,
   },
   signUpContainer: {
     marginTop: 20,
-    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   forgotUsernameContainer: {
     alignItems: 'flex-start',
-    marginHorizontal: 20+15,
+    marginHorizontal: 35,
     marginTop: -10,
     marginBottom: 5,
   },
   signUpText: {
     fontSize: 16,
-    color: '#333',
+    color: '#B0B0B0',
+    marginRight: 5,
   },
   signUpButton: {
     fontSize: 16,
-    color: '#ff6347',
+    color: '#007AFF',
     fontWeight: 'bold',
   },
   forgotUsernameButton: {
     fontSize: 12,
-    color: '#28502E',
+    color: '#007AFF',
   },
   errorText: {
-    color: 'red',
+    color: '#FF6347',
     textAlign: 'center',
     marginBottom: 10,
   },

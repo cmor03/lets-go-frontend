@@ -1,7 +1,7 @@
 // app/events.tsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, FlatList, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import { collection, query, where, onSnapshot, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, addDoc, Timestamp, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';  // Firebase setup
 import { useRouter } from 'expo-router';
 
@@ -21,6 +21,7 @@ export default function Events() {
   const [newEventDescription, setNewEventDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [usernames, setUsernames] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -49,7 +50,22 @@ export default function Events() {
         };
       });
       setEvents(eventsData);
+
+      // Fetch usernames immediately after setting events
+      const allUserIds = [...new Set(eventsData.flatMap(event => [...event.invitedUsers]))];
+      fetchUsernames(allUserIds);
     });
+
+    // Fetch usernames for all users
+    const fetchUsernames = async (userIds: string[]) => {
+      const usernamePromises = userIds.map(async (uid) => {
+        const userDoc = await getDoc(doc(db, 'users', uid));
+        return { [uid]: userDoc.data()?.username || 'Unknown User' };
+      });
+      const usernameResults = await Promise.all(usernamePromises);
+      const usernameMap = Object.assign({}, ...usernameResults);
+      setUsernames(usernameMap);
+    };
 
     return () => unsubscribe();
   }, []);
@@ -84,15 +100,22 @@ export default function Events() {
     }
   };
 
-  const renderEvent = ({ item }: { item: { id: string; eventTitle: string; creatorId: string } }) => (
+  const renderEvent = ({ item }: { item: Event }) => (
     <TouchableOpacity
+      style={styles.eventItem}
       onPress={() => router.push({ pathname: `./events/${item.id}` })}
-      style={styles.eventContainer}
     >
       <Text style={styles.eventTitle}>{item.eventTitle}</Text>
-      <Text>Creator: {auth.currentUser && item.creatorId === auth.currentUser.uid ? 'You' : item.creatorId}</Text>
+      <Text style={styles.eventText}>Date: {item.createdAt.toDate().toLocaleDateString()}</Text>
+      <Text style={styles.eventText}>
+        Invitees: {item.invitedUsers.map(uid => usernames[uid] || 'Loading...').join(', ')}
+      </Text>
     </TouchableOpacity>
   );
+
+  const handleCreateEventPress = () => {
+    router.push('/create_event');
+  };
 
   return (
     <View style={styles.container}>
@@ -101,23 +124,12 @@ export default function Events() {
         data={events}
         renderItem={renderEvent}
         keyExtractor={(item) => item.id}
-        ListEmptyComponent={<Text>No events found.</Text>}
+        ListEmptyComponent={<Text style={styles.emptyText}>No events found.</Text>}
       />
 
-      <Text style={styles.heading}>Create New Event</Text>
-      <TextInput
-        placeholder="Event Title"
-        value={newEventTitle}
-        onChangeText={setNewEventTitle}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Event Description"
-        value={newEventDescription}
-        onChangeText={setNewEventDescription}
-        style={styles.input}
-      />
-      <Button title={loading ? 'Creating...' : 'Create Event'} onPress={handleCreateEvent} />
+      <TouchableOpacity style={styles.createButton} onPress={handleCreateEventPress}>
+        <Text style={styles.createButtonText}>Create New Event</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -126,11 +138,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#121212', // Dark background
   },
   heading: {
-    fontSize: 20,
-    marginBottom: 10,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#ffffff', // White text
   },
   input: {
     height: 50,
@@ -150,5 +164,37 @@ const styles = StyleSheet.create({
   eventTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#ffffff', // White text
+    marginBottom: 5,
+  },
+  createButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginTop: 20,
+    alignSelf: 'center',
+  },
+  createButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  eventItem: {
+    padding: 15,
+    backgroundColor: '#1E1E1E', // Slightly lighter than background
+    marginBottom: 10,
+    borderRadius: 10,
+    elevation: 3, // Add some depth
+  },
+  eventText: {
+    color: '#B0B0B0', // Light gray text
+    marginBottom: 3,
+  },
+  emptyText: {
+    color: '#B0B0B0',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });

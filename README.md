@@ -120,3 +120,7 @@ Freshman, Computer Science, Texas
 ### Ian Kade Johnston
 
 Graduate May 2023, Bachelor's in Computer Science: Data Science, Colorado
+
+### Aaron Nguyen
+
+Freshman, Computer Science, Texas

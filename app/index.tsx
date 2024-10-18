@@ -62,9 +62,13 @@ export default function Login() {
     router.push('/forgot_username');
   };
 
+  const handleForgotPassword = () => {
+    router.push('/forgot_password');
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>LET'S GO</Text>
+      <Text style={styles.logo}>LET'S GO!</Text>
       <TextInput
         placeholder="Username or Email"
         value={identifier}
@@ -73,9 +77,9 @@ export default function Login() {
         autoCapitalize="none"
         placeholderTextColor="#B0B0B0"
       />
-      <View style={styles.forgotUsernameContainer}>
+      <View style={styles.forgotContainer}>
         <TouchableOpacity onPress={handleForgotUsername}>
-          <Text style={styles.forgotUsernameButton}>Forgot Username</Text>
+          <Text style={styles.forgotButton}>Forgot Username</Text>
         </TouchableOpacity>
       </View>
       <TextInput
@@ -86,6 +90,11 @@ export default function Login() {
         secureTextEntry
         placeholderTextColor="#B0B0B0"
       />
+      <View style={styles.forgotContainer}>
+        <TouchableOpacity onPress={handleForgotPassword}>
+          <Text style={styles.forgotButton}>Forgot Password</Text>
+        </TouchableOpacity>
+      </View>
       {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       <TouchableOpacity 
         style={styles.loginButton} 
@@ -110,31 +119,30 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#121212',
+    backgroundColor: '#FFFFFF',
   },
   logo: {
-    fontFamily: 'sans-serif',
-    fontSize: 48,
-    fontWeight: 'bold',
+    fontFamily: 'neo-grotesque sans-serif',
+    fontSize: 56,
+    fontWeight: 900,
     textAlign: 'center',
     marginBottom: 40,
-    color: '#007AFF',
+    color: '#000000',
   },
   input: {
     height: 50,
-    borderColor: '#1E1E1E',
-    borderWidth: 1,
+    borderBottomColor: '#28502E',
+    borderBottomWidth: 1,
     marginBottom: 15,
     paddingHorizontal: 10,
-    borderRadius: 5,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#E6E0E9',
     marginHorizontal: 20,
-    color: '#FFFFFF',
+    color: '#28502E',
   },
   loginButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#28502E',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 200,
     borderRadius: 25,
     marginTop: 20,
     alignSelf: 'center',
@@ -143,7 +151,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'left',
   },
   loadingIndicator: {
     marginTop: 10,
@@ -153,7 +161,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  forgotUsernameContainer: {
+  forgotContainer: {
     alignItems: 'flex-start',
     marginHorizontal: 35,
     marginTop: -10,
@@ -169,9 +177,9 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontWeight: 'bold',
   },
-  forgotUsernameButton: {
+  forgotButton: {
     fontSize: 12,
-    color: '#007AFF',
+    color: '#28502E',
   },
   errorText: {
     color: '#FF6347',

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, View } from 'react-native';
-import { auth, db } from './firebase';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Text, TextInput, Button, StyleSheet, Alert, ScrollView, TouchableOpacity, View } from 'react-native';
+import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { useRouter } from 'expo-router';
@@ -89,7 +88,7 @@ const Signup = () => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Sign Up</Text>
+            {/* <Text style={styles.title}>Sign Up</Text> */}
 
             <TextInput
                 style={styles.input}
@@ -153,34 +152,91 @@ const Signup = () => {
                 />
             )}
 
-            <Button title="Sign Up" onPress={handleSignup} />
+            <TouchableOpacity 
+                style={styles.loginButton} 
+                onPress={handleSignup}
+            >
+                <Text style={styles.loginButtonText}>Sign Up</Text>
+            </TouchableOpacity>
+
         </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flexGrow: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
+      flex: 1,
+      justifyContent: 'center',
+      padding: 20,
+      backgroundColor: '#121212',
     },
-    title: {
-        fontSize: 24,
-        marginBottom: 20,
+    logo: {
+      fontFamily: 'sans-serif',
+      fontSize: 48,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginBottom: 40,
+      color: '#007AFF',
     },
     input: {
-        width: '100%',
-        padding: 10,
-        marginVertical: 10,
-        borderWidth: 1,
-        borderRadius: 5,
-        borderColor: '#ccc',
+      height: 50,
+      borderColor: '#1E1E1E',
+      borderWidth: 1,
+      marginBottom: 15,
+      paddingHorizontal: 10,
+      borderRadius: 5,
+      backgroundColor: '#1E1E1E',
+      marginHorizontal: 20,
+      color: '#FFFFFF',
+    },
+    loginButton: {
+      backgroundColor: '#007AFF',
+      paddingVertical: 12,
+      paddingHorizontal: 20,
+      borderRadius: 25,
+      marginTop: 20,
+      alignSelf: 'center',
+    },
+    loginButtonText: {
+      color: '#FFFFFF',
+      fontSize: 18,
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    loadingIndicator: {
+      marginTop: 10,
+    },
+    signUpContainer: {
+      marginTop: 20,
+      flexDirection: 'row',
+      justifyContent: 'center',
+    },
+    forgotUsernameContainer: {
+      alignItems: 'flex-start',
+      marginHorizontal: 35,
+      marginTop: -10,
+      marginBottom: 5,
+    },
+    signUpText: {
+      fontSize: 16,
+      color: '#B0B0B0',
+      marginRight: 5,
+    },
+    signUpButton: {
+      fontSize: 16,
+      color: '#007AFF',
+      fontWeight: 'bold',
+    },
+    forgotUsernameButton: {
+      fontSize: 12,
+      color: '#007AFF',
     },
     errorText: {
-        color: 'red',
-        marginBottom: 10,
+      color: '#FF6347',
+      textAlign: 'center',
+      marginBottom: 10,
     },
-});
+  });
+  
 
 export default Signup;

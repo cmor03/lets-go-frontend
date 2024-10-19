@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#121212',
+    backgroundColor: '#A4C2A8',
   },
   logo: {
     fontFamily: 'sans-serif',
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 40,
-    color: '#007AFF',
+    color: '#28502E',
   },
   input: {
     height: 50,
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   loginButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#28502E',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 25,
@@ -161,17 +161,17 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     fontSize: 16,
-    color: '#B0B0B0',
+    color: '#28502E',
     marginRight: 5,
   },
   signUpButton: {
     fontSize: 16,
-    color: '#007AFF',
+    color: '#28502E',
     fontWeight: 'bold',
   },
   forgotUsernameButton: {
     fontSize: 12,
-    color: '#007AFF',
+    color: '#28502E',
   },
   errorText: {
     color: '#FF6347',

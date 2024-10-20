@@ -11,6 +11,7 @@ import {
   Alert,
   ScrollView,
   Platform,
+  KeyboardTypeOptions,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
@@ -110,6 +111,7 @@ export default function Login() {
               value={identifier}
               onChangeValue={setIdentifier}
               onForgot={handleForgotUsername}
+              keyboardType="email-address"
               errorKey="identifier"
               errorObj={errors}
             />
@@ -164,6 +166,7 @@ interface TextInputWithLinkProps {
   password?: boolean;
   errorObj: LoginErrors;
   errorKey: string;
+  keyboardType?: KeyboardTypeOptions;
 }
 
 const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
@@ -173,7 +176,8 @@ const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
   onForgot,
   password = false,
   errorObj,
-  errorKey
+  errorKey,
+  keyboardType = "default",
 }) => {
   const theme = useTheme();
 
@@ -186,6 +190,8 @@ const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
           onChangeText={onChangeValue}
           mode="outlined"
           secureTextEntry={password}
+          keyboardType={keyboardType}
+          autoCapitalize="none"
         />
         {errorKey in errorObj && <HelperText type="error">{errorObj[errorKey]}</HelperText>}
       </View>

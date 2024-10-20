@@ -131,22 +131,22 @@ const Signup = () => {
               onChangeLastName={setLastName}
             />
             <View>
-              <TextInput label="Username" mode="outlined" value={username} onChangeText={setUsername} />
+              <TextInput label="Username" mode="outlined" value={username} onChangeText={setUsername} autoCapitalize="none" />
               {'username' in errors && <HelperText type="error">{errors.username}</HelperText>}
             </View>
             <View>
-              <TextInput label="Email Address" mode="outlined" value={email} onChangeText={setEmail} />
+              <TextInput label="Email Address" mode="outlined" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
               {'email' in errors && <HelperText type="error">{errors.email}</HelperText>}
             </View>
             <View style={styles.flexRow}>
               <Button style={styles.flexGrow} mode="outlined" onPress={() => {setBirthday({ defined: true, date: new Date('1995-12-17T03:24:00') }) }}>{birthday.defined ? birthday.date.toLocaleDateString() : "Date of Birth"}</Button>
             </View>
             <View>
-              <TextInput label="Password" mode="outlined" value={password} onChangeText={setPassword} secureTextEntry={true} />
+              <TextInput label="Password" mode="outlined" value={password} onChangeText={setPassword} secureTextEntry={true} autoCapitalize="none" />
               {'password' in errors && <HelperText type="error">{errors.password}</HelperText>}
             </View>
             <View>
-              <TextInput label="Confirm Password" mode="outlined" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} />
+              <TextInput label="Confirm Password" mode="outlined" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} autoCapitalize="none" />
               {'confirmPassword' in errors && <HelperText type="error">{errors.confirmPassword}</HelperText>}
             </View>
             <Button

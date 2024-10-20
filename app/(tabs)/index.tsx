@@ -10,10 +10,17 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { doc, getDoc } from "firebase/firestore";
 import styles from "../styles";
+
+interface LoginErrors {
+  [key: string]: string | undefined;
+  identifier?: string;
+  password?: string;
+}
 
 import {
   useTheme,
@@ -27,18 +34,22 @@ export default function Login() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errors, setErrors] = useState<LoginErrors>({});
   const router = useRouter();
   const theme = useTheme();
 
+  const validateForm: () => Promise<boolean> = async() => {
+    const newErrors: LoginErrors = {};
+    if (!identifier) newErrors.identifier = "Enter a username or email address";
+    if (!password) newErrors.password = "Enter a password"
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
+
   const handleLogin = async () => {
-    if (identifier === "" || password === "") {
-      setErrorMessage("Please enter username/email and password");
-      return;
-    }
+    if (!(await validateForm())) return;
 
     setLoading(true);
-    setErrorMessage("");
 
     try {
       let email = identifier;
@@ -49,6 +60,7 @@ export default function Login() {
         const usernameDoc = await getDoc(doc(db, "usernames", identifier));
 
         if (!usernameDoc.exists()) {
+          setErrors((prev) => ({...prev, identifier: "Invalid username or email address"}))
           throw new Error("User not found");
         }
 
@@ -67,18 +79,13 @@ export default function Login() {
       const user = userCredential.user;
       router.push("/events");
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("An unknown error occurred");
+      console.error(error);
+      if (error instanceof Error){
+        Alert.alert("Error", error.message);
       }
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSignUp = () => {
-    router.push("/signup");
   };
 
   const handleForgotUsername = () => {
@@ -93,15 +100,18 @@ export default function Login() {
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="always"
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <TouchableWithoutFeedback onPress={Platform.OS != "web" ? Keyboard.dismiss : ()=>{}}>
           <View style={styles.inner}>
             <LogoHeader useIcon={true}/>
             <TextInputWithLink
               label="Username or Email Address"
               value={identifier}
               onChangeValue={setIdentifier}
-              onForgot={() => console.log("Identifier was Forgotten")}
+              onForgot={handleForgotUsername}
+              errorKey="identifier"
+              errorObj={errors}
             />
             <TextInputWithLink
               label="Password"
@@ -109,12 +119,14 @@ export default function Login() {
               onChangeValue={setPassword}
               onForgot={() => Alert.alert("Hello", "world")}
               password={true}
+              errorKey="password"
+              errorObj={errors}
             />
             <Button
               icon="login"
               mode="contained-tonal"
               rippleColor={theme.colors.primary}
-              onPress={() => {}}
+              onPress={handleLogin}
               style={{ marginTop: "auto" }}
             >
               Log In
@@ -130,7 +142,7 @@ interface LogoHeaderProps {
   useIcon?: boolean;
 }
 
-export const LogoHeader: React.FC<LogoHeaderProps> = ({useIcon}) => {
+export const LogoHeader: React.FC<LogoHeaderProps> = ({useIcon = false}) => {
   return (
     <View style={{ alignItems: "center", gap: 16 }}>
       <Text
@@ -139,14 +151,10 @@ export const LogoHeader: React.FC<LogoHeaderProps> = ({useIcon}) => {
       >
         Let's Go
       </Text>
-      {useIcon ? <Icon source="compass-outline" size={80} /> : null}
+      {useIcon && <Icon source="compass-outline" size={80} />}
     </View>
   );
 };
-
-LogoHeader.defaultProps = {
-  useIcon: false
-}
 
 interface TextInputWithLinkProps {
   label: string;
@@ -154,6 +162,8 @@ interface TextInputWithLinkProps {
   onChangeValue: (text: string) => void;
   onForgot: () => void;
   password?: boolean;
+  errorObj: LoginErrors;
+  errorKey: string;
 }
 
 const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
@@ -161,19 +171,24 @@ const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
   value,
   onChangeValue,
   onForgot,
-  password
+  password = false,
+  errorObj,
+  errorKey
 }) => {
   const theme = useTheme();
 
   return (
     <View style={styles.loginTextInputWithLink}>
-      <TextInput
-        label={label}
-        value={value}
-        onChangeText={onChangeValue}
-        mode="outlined"
-        secureTextEntry={password}
-      />
+      <View>
+        <TextInput
+          label={label}
+          value={value}
+          onChangeText={onChangeValue}
+          mode="outlined"
+          secureTextEntry={password}
+        />
+        {errorKey in errorObj && <HelperText type="error">{errorObj[errorKey]}</HelperText>}
+      </View>
       <TouchableOpacity onPress={onForgot}>
         <Text
           variant="labelMedium"
@@ -185,7 +200,3 @@ const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
     </View>
   );
 };
-
-TextInputWithLink.defaultProps = {
-  password: false
-}

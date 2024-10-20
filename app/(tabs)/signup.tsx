@@ -7,6 +7,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
+  Platform
 } from "react-native";
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -15,7 +16,7 @@ import { useRouter } from "expo-router";
 import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import styles from "../styles";
 import { LogoHeader } from "./index";
-import { Button, TextInput } from "react-native-paper";
+import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
 
 interface Errors {
   firstName?: string;
@@ -27,8 +28,8 @@ interface Errors {
 }
 
 interface Birthday {
-    date: Date;
-    defined: boolean;
+  date: Date;
+  defined: boolean;
 }
 
 const Signup = () => {
@@ -38,9 +39,10 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [birthday, setBirthday] = useState<Birthday>({date: new Date(), defined: false});
+  const [birthday, setBirthday] = useState<Birthday>({ date: new Date(), defined: false });
   const [errors, setErrors] = useState<Errors>({});
   const router = useRouter();
+  const theme = useTheme();
 
   const validateForm = () => {
     let newErrors: Errors = {};
@@ -98,17 +100,11 @@ const Signup = () => {
     } catch (error: any) {
       console.error("Signup error:", error);
       if (error.code === "auth/email-already-in-use") {
-        Alert.alert(
-          "Error",
-          "This email is already in use. Please use a different email."
-        );
+        setErrors((prev) => ({ ...prev, email: "Email already in use" }));
       } else if (error.code === "auth/invalid-email") {
-        Alert.alert("Error", "The email address is not valid.");
+        setErrors((prev) => ({ ...prev, email: "Email is invalid" }));
       } else if (error.code === "auth/weak-password") {
-        Alert.alert(
-          "Error",
-          "The password is too weak. Please use a stronger password."
-        );
+        setErrors((prev) => ({ ...prev, confirmPassword: "Password is too weak" }));
       } else {
         Alert.alert("Error", `Failed to create account: ${error.message}`);
       }
@@ -123,8 +119,9 @@ const Signup = () => {
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="always"
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <TouchableWithoutFeedback onPress={Platform.OS != "web" ? Keyboard.dismiss : () => { }}>
           <View style={styles.inner}>
             <LogoHeader />
             <NameInput
@@ -133,11 +130,33 @@ const Signup = () => {
               lastName={lastName}
               onChangeLastName={setLastName}
             />
-            <TextInput label="Username" mode="outlined" value={username} onChangeText={setUsername}/>
-            <TextInput label="Email Address" mode="outlined" value={email} onChangeText={setEmail}/>
-            <View style={styles.flexRow}>
-                <Button style={styles.flexGrow} mode="outlined" onPress={() => {}}>{birthday.defined ? birthday.date.toLocaleDateString() : "Date of Birth"}</Button>
+            <View>
+              <TextInput label="Username" mode="outlined" value={username} onChangeText={setUsername} />
+              {'username' in errors && <HelperText type="error">{errors.username}</HelperText>}
             </View>
+            <View>
+              <TextInput label="Email Address" mode="outlined" value={email} onChangeText={setEmail} />
+              {'email' in errors && <HelperText type="error">{errors.email}</HelperText>}
+            </View>
+            <View style={styles.flexRow}>
+              <Button style={styles.flexGrow} mode="outlined" onPress={() => {setBirthday({ defined: true, date: new Date('1995-12-17T03:24:00') }) }}>{birthday.defined ? birthday.date.toLocaleDateString() : "Date of Birth"}</Button>
+            </View>
+            <View>
+              <TextInput label="Password" mode="outlined" value={password} onChangeText={setPassword} secureTextEntry={true} />
+              {'password' in errors && <HelperText type="error">{errors.password}</HelperText>}
+            </View>
+            <View>
+              <TextInput label="Confirm Password" mode="outlined" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} />
+              {'confirmPassword' in errors && <HelperText type="error">{errors.confirmPassword}</HelperText>}
+            </View>
+            <Button
+              icon="account-plus"
+              mode="contained-tonal"
+              onPress={handleSignup}
+              style={{ marginTop: "auto" }}
+            >
+              Register
+            </Button>
           </View>
         </TouchableWithoutFeedback>
       </ScrollView>
@@ -160,8 +179,8 @@ const NameInput: React.FC<NameInputProps> = ({
 }) => {
   return (
     <View style={styles.flexRow}>
-      <TextInput label="First Name" value={firstName} onChangeText={onChangeFirstName} mode="outlined" style={styles.flexGrow}/>
-      <TextInput label="Last Name" value={lastName} onChangeText={onChangeLastName} mode="outlined" style={styles.flexGrow}/>
+      <TextInput label="First Name" value={firstName} onChangeText={onChangeFirstName} mode="outlined" style={styles.flexGrow} />
+      <TextInput label="Last Name" value={lastName} onChangeText={onChangeLastName} mode="outlined" style={styles.flexGrow} />
     </View>
   );
 };

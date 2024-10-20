@@ -6,6 +6,7 @@ import { auth, db } from './firebase';  // Firebase setup
 import { useRouter } from 'expo-router';
 
 export default function Events() {
+  
   interface Event {
     id: string;
     eventTitle: string;
@@ -106,6 +107,9 @@ export default function Events() {
       onPress={() => router.push({ pathname: `./events/${item.id}` })}
     >
       <Text style={styles.eventTitle}>{item.eventTitle}</Text>
+      <Text style={styles.eventText}>Locations: {item.locations.length > 0 ? item.locations.join(', ') : 'No locations set'}</Text>
+      <Text style={styles.eventText}>{item.description}</Text>
+      
       <Text style={styles.eventText}>Date: {item.createdAt.toDate().toLocaleDateString()}</Text>
       <Text style={styles.eventText}>
         Invitees: {item.invitedUsers.map(uid => usernames[uid] || 'Loading...').join(', ')}

@@ -96,7 +96,7 @@ export default function Login() {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.inner}>
-            <LogoHeader />
+            <LogoHeader useIcon={true}/>
             <TextInputWithLink
               label="Username or Email Address"
               value={identifier}
@@ -125,7 +125,11 @@ export default function Login() {
   );
 }
 
-const LogoHeader = () => {
+interface LogoHeaderProps {
+  useIcon?: boolean;
+}
+
+export const LogoHeader: React.FC<LogoHeaderProps> = ({useIcon}) => {
   return (
     <View style={{ alignItems: "center", gap: 16 }}>
       <Text
@@ -134,19 +138,23 @@ const LogoHeader = () => {
       >
         Let's Go
       </Text>
-      <Icon source="compass-outline" size={80} />
+      {useIcon ? <Icon source="compass-outline" size={80} /> : null}
     </View>
   );
 };
 
-interface Props {
+LogoHeader.defaultProps = {
+  useIcon: false
+}
+
+interface TextInputWithLinkProps {
   label: string;
   value: string;
   onChangeValue: (text: string) => void;
   onForgot: () => void;
 }
 
-const TextInputWithLink: React.FC<Props> = ({
+const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
   label,
   value,
   onChangeValue,

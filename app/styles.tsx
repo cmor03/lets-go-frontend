@@ -19,5 +19,13 @@ export default StyleSheet.create({
     },
     underline: {
         textDecorationLine: "underline"
+    },
+    flexRow: {
+        display: "flex",
+        flexDirection: "row",
+        gap: 24,
+    },
+    flexGrow: {
+        flex: 1
     }
 });

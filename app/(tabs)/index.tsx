@@ -108,6 +108,7 @@ export default function Login() {
               value={password}
               onChangeValue={setPassword}
               onForgot={() => Alert.alert("Hello", "world")}
+              password={true}
             />
             <Button
               icon="login"
@@ -152,6 +153,7 @@ interface TextInputWithLinkProps {
   value: string;
   onChangeValue: (text: string) => void;
   onForgot: () => void;
+  password?: boolean;
 }
 
 const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
@@ -159,6 +161,7 @@ const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
   value,
   onChangeValue,
   onForgot,
+  password
 }) => {
   const theme = useTheme();
 
@@ -169,7 +172,7 @@ const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
         value={value}
         onChangeText={onChangeValue}
         mode="outlined"
-        secureTextEntry={true}
+        secureTextEntry={password}
       />
       <TouchableOpacity onPress={onForgot}>
         <Text
@@ -182,3 +185,7 @@ const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
     </View>
   );
 };
+
+TextInputWithLink.defaultProps = {
+  password: false
+}

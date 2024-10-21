@@ -23,6 +23,7 @@ import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
 
 interface Errors {
   firstName?: string;
+  lastName?: string;
   username?: string;
   email?: string;
   password?: string;
@@ -45,10 +46,11 @@ const Signup = () => {
 
   const validateForm = () => {
     let newErrors: Errors = {};
-    if (!firstName.trim()) newErrors.firstName = "First name is required";
-    if (!username.trim()) newErrors.username = "Username is required";
-    if (!email.trim()) newErrors.email = "Email is required";
-    if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email is invalid";
+    if (!firstName.trim()) newErrors.firstName = "First name required";
+    if (!lastName.trim()) newErrors.lastName = "Last name required";
+    if (!username.trim()) newErrors.username = "Username required";
+    if (!email.trim()) newErrors.email = "Email required";
+    if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Invalid email address";
     if (password.length < 6)
       newErrors.password = "Password must be at least 6 characters";
     if (password !== confirmPassword)
@@ -141,8 +143,10 @@ const Signup = () => {
             <NameInput
               firstName={firstName}
               onChangeFirstName={setFirstName}
+              firstNameError={"firstName"}
               lastName={lastName}
               onChangeLastName={setLastName}
+              errorObj={errors}
             />
             <View>
               <TextInput
@@ -169,24 +173,29 @@ const Signup = () => {
                 <HelperText type="error">{errors.email}</HelperText>
               )}
             </View>
-            <Button
-              style={styles.flexGrow}
-              mode="outlined"
-              onPress={() =>
-                Platform.OS == "web"
-                  ? setBirthday(new Date(0))
-                  : setShowBirthdayPicker(true)
-              }
-            >
-              {birthday ? birthday.toLocaleDateString() : "Date of Birth"}
-            </Button>
-            {showBirthdayPicker && (
-              <DateTimePicker
-                value={birthday || new Date()}
-                mode={"date"}
-                onChange={onChangeBirthday}
-              />
-            )}
+            <View>
+              <Button
+                style={styles.flexGrow}
+                mode="outlined"
+                onPress={() =>
+                  Platform.OS == "web"
+                    ? setBirthday(new Date(0))
+                    : setShowBirthdayPicker(true)
+                }
+              >
+                {birthday ? birthday.toLocaleDateString() : "Date of Birth"}
+              </Button>
+              {"birthday" in errors && (
+                <HelperText type="error">{errors.birthday}</HelperText>
+              )}
+              {showBirthdayPicker && (
+                <DateTimePicker
+                  value={birthday || new Date()}
+                  mode={"date"}
+                  onChange={onChangeBirthday}
+                />
+              )}
+            </View>
             <View>
               <TextInput
                 label="Password"
@@ -231,32 +240,44 @@ const Signup = () => {
 interface NameInputProps {
   firstName: string;
   onChangeFirstName: (firstName: string) => void;
+  firstNameError: string;
   lastName: string;
   onChangeLastName: (lastName: string) => void;
+  errorObj: Errors;
 }
 
 const NameInput: React.FC<NameInputProps> = ({
   firstName,
   onChangeFirstName,
+  firstNameError,
   lastName,
   onChangeLastName,
+  errorObj,
 }) => {
   return (
     <View style={styles.flexRow}>
-      <TextInput
-        label="First Name"
-        value={firstName}
-        onChangeText={onChangeFirstName}
-        mode="outlined"
-        style={styles.flexGrow}
-      />
-      <TextInput
-        label="Last Name"
-        value={lastName}
-        onChangeText={onChangeLastName}
-        mode="outlined"
-        style={styles.flexGrow}
-      />
+      <View style={styles.flexGrow}>
+        <TextInput
+          label="First Name"
+          value={firstName}
+          onChangeText={onChangeFirstName}
+          mode="outlined"
+        />
+        {"firstName" in errorObj && (
+          <HelperText type="error">{errorObj.firstName}</HelperText>
+        )}
+      </View>
+      <View style={styles.flexGrow}>
+        <TextInput
+          label="Last Name"
+          value={lastName}
+          onChangeText={onChangeLastName}
+          mode="outlined"
+        />
+        {"lastName" in errorObj && (
+          <HelperText type="error">{errorObj.lastName}</HelperText>
+        )}
+      </View>
     </View>
   );
 };

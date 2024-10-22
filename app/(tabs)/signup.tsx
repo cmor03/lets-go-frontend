@@ -20,6 +20,7 @@ import DateTimePicker, {
 import styles from "../styles";
 import { LogoHeader } from "./index";
 import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 interface Errors {
   firstName?: string;
@@ -98,7 +99,6 @@ const Signup = () => {
       await setDoc(doc(db, "usernames", username), { uid: user.uid });
 
       console.log("User created successfully:", user.uid);
-      // router.push("/events");
     } catch (error: any) {
       console.error("Signup error:", error);
       if (error.code === "auth/email-already-in-use") {

@@ -98,7 +98,7 @@ const Signup = () => {
       await setDoc(doc(db, "usernames", username), { uid: user.uid });
 
       console.log("User created successfully:", user.uid);
-      router.push("/events");
+      // router.push("/events");
     } catch (error: any) {
       console.error("Signup error:", error);
       if (error.code === "auth/email-already-in-use") {

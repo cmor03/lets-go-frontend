@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, FlatList, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
 import { collection, query, where, onSnapshot, addDoc, Timestamp, doc, getDoc } from 'firebase/firestore';
-import { auth, db } from './firebase';  // Firebase setup
+import { auth, db } from '../firebase';  // Firebase setup
 import { useRouter } from 'expo-router';
 
 export default function Events() {
@@ -104,7 +104,7 @@ export default function Events() {
   const renderEvent = ({ item }: { item: Event }) => (
     <TouchableOpacity
       style={styles.eventItem}
-      onPress={() => router.push({ pathname: `./events/${item.id}` })}
+      onPress={() => router.push(`/events/${item.id}`)}
     >
       <Text style={styles.eventTitle}>{item.eventTitle}</Text>
       <Text style={styles.eventText}>Locations: {item.locations.length > 0 ? item.locations.join(', ') : 'No locations set'}</Text>
@@ -118,7 +118,7 @@ export default function Events() {
   );
 
   const handleCreateEventPress = () => {
-    router.push('/create_event');
+    router.push('/events/create_event');
   };
 
   return (

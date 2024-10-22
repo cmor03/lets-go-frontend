@@ -78,7 +78,7 @@ export default function Login() {
         password
       );
       const user = userCredential.user;
-      router.push("/events");
+      // router.push("/events");
     } catch (error) {
       console.error(error);
       if (error instanceof Error){

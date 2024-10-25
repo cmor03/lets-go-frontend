@@ -27,5 +27,9 @@ export default StyleSheet.create({
     },
     flexGrow: {
         flex: 1
+    },
+    centeredContainer: {
+        display: "flex",
+        justifyContent: "center"
     }
 });

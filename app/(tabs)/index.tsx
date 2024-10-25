@@ -31,6 +31,7 @@ import {
   HelperText,
   Icon,
 } from "react-native-paper";
+import { FirebaseError } from "firebase/app";
 export default function Login() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -45,6 +46,11 @@ export default function Login() {
     if (!password) newErrors.password = "Enter a password"
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  }
+
+  const handleLoginError = (error: FirebaseError) => {
+    if (error.code == "auth/invalid-credential") setErrors((prev) => ({...prev, password: "Authentication failed. Invalid credentials."}));
+    if (error.code == "auth/too-many-requests") setErrors((prev) => ({...prev, password: "Authentication failed. This account is temporarily disabled due to repeated failed login attemps."}));
   }
 
   const handleLogin = async () => {
@@ -78,12 +84,9 @@ export default function Login() {
         password
       );
       const user = userCredential.user;
-      router.push("/events");
     } catch (error) {
-      console.error(error);
-      if (error instanceof Error){
-        Alert.alert("Error", error.message);
-      }
+      if (error instanceof FirebaseError)
+        handleLoginError(error);
     } finally {
       setLoading(false);
     }
@@ -183,26 +186,26 @@ const TextInputWithLink: React.FC<TextInputWithLinkProps> = ({
 
   return (
     <View style={styles.loginTextInputWithLink}>
+      <TextInput
+        label={label}
+        value={value}
+        onChangeText={onChangeValue}
+        mode="outlined"
+        secureTextEntry={password}
+        keyboardType={keyboardType}
+        autoCapitalize="none"
+      />
       <View>
-        <TextInput
-          label={label}
-          value={value}
-          onChangeText={onChangeValue}
-          mode="outlined"
-          secureTextEntry={password}
-          keyboardType={keyboardType}
-          autoCapitalize="none"
-        />
+        <TouchableOpacity onPress={onForgot}>
+          <Text
+            variant="labelMedium"
+            style={{ ...styles.underline, color: theme.colors.primary }}
+          >
+            Forgot {label}
+          </Text>
+        </TouchableOpacity>
         {errorKey in errorObj && <HelperText type="error">{errorObj[errorKey]}</HelperText>}
       </View>
-      <TouchableOpacity onPress={onForgot}>
-        <Text
-          variant="labelMedium"
-          style={{ ...styles.underline, color: theme.colors.primary }}
-        >
-          Forgot {label}
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };

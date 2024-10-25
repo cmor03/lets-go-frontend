@@ -3,6 +3,14 @@
 
 This is the **Let's Go** project, a democratic way to make plans using [Expo](https://expo.dev). This app is designed to help users create, join, and manage events collaboratively. The project was bootstrapped with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app) and uses **Expo Router** for file-based navigation.
 
+#### Create a New Event
+
+You can create an event using the "Create Event" button within the app. This feature allows users to add the event name, description, and potential locations. Each event is created by a user but can be shared with other users for collaboration.
+
+#### Join Events
+
+Users can join events created by other users. A future feature will include event invitations and notifications for events you're invited to.
+
 ## Get started
 
 1. Install dependencies
@@ -41,18 +49,7 @@ The app follows a simple, modular file structure with Expo Router for navigation
 
 This app is integrated with Firebase for authentication and real-time data management. The Firebase configuration is set up in the `firebase.js` file.
 
-## How to Develop
-
-### Create a New Event
-
-You can create an event using the "Create Event" button within the app. This feature allows users to add the event name, description, and potential locations. Each event is created by a user but can be shared with other users for collaboration.
-
-### Join Events
-
-Users can join events created by other users. A future feature will include event invitations and notifications for events you're invited to.
-
 ## Commands
-
 - **Start fresh**: To ensure the app runs without cached issues, always start the project with:
 
    ```bash
@@ -68,16 +65,13 @@ Users can join events created by other users. A future feature will include even
 ## Community Resources
 
 - [Expo documentation](https://docs.expo.dev/): Learn more about developing with Expo.
-- [Expo on GitHub](https://github.com/expo/expo): Contribute to Expo’s open-source projects.
-- [Discord community](https://chat.expo.dev): Chat with other Expo developers and ask questions.
+  - [Expo on GitHub](https://github.com/expo/expo): Contribute to Expo’s open-source projects.
+  - [Discord community](https://chat.expo.dev): Chat with other Expo developers and ask questions.
+- [React Native Documentation](https://reactnative.dev/):  Learn more about the front-end framework being used for this app
 
 ## Join the Movement!
 
 Let's Go is not just an app, it's a democratic way to make plans! Stay tuned for more exciting features as we continue developing.
-
-## Status
-
-Currently working on finalizing the Figma and adding pages.
 
 ## Meet the Developers
 

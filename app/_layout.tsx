@@ -15,7 +15,7 @@ export default function RootLayout() {
       if (user) {
         router.replace("/events")
       } else {
-        router.replace("/(tabs)")
+        router.replace("/auth/(tabs)/")
       }
     }
   }, [user, loading])

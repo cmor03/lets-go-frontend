@@ -11,7 +11,7 @@ export default StyleSheet.create({
         flex: 1,
         display: "flex",
         padding: 24,
-        gap: 24
+        gap: 8
     },
     loginTextInputWithLink: {
         display: "flex",

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../firebase";
+import { auth } from "../firebase";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -14,12 +14,11 @@ import {
   KeyboardTypeOptions,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { doc, getDoc } from "firebase/firestore";
 import styles from "../styles";
 
 interface LoginErrors {
   [key: string]: string | undefined;
-  identifier?: string;
+  email?: string;
   password?: string;
 }
 
@@ -33,7 +32,7 @@ import {
 } from "react-native-paper";
 import { FirebaseError } from "firebase/app";
 export default function Login() {
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<LoginErrors>({});
@@ -42,7 +41,7 @@ export default function Login() {
 
   const validateForm: () => Promise<boolean> = async() => {
     const newErrors: LoginErrors = {};
-    if (!identifier) newErrors.identifier = "Enter a username or email address";
+    if (!email) newErrors.email = "Enter an email address";
     if (!password) newErrors.password = "Enter a password"
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -59,41 +58,17 @@ export default function Login() {
     setLoading(true);
 
     try {
-      let email = identifier;
-
-      // Check if the identifier is a username
-      if (!identifier.includes("@")) {
-        // Get the email associated with the username
-        const usernameDoc = await getDoc(doc(db, "usernames", identifier));
-
-        if (!usernameDoc.exists()) {
-          setErrors((prev) => ({...prev, identifier: "Invalid username or email address"}))
-          throw new Error("User not found");
-        }
-
-        const userId = usernameDoc.data().uid;
-        const userDoc = await getDoc(doc(db, "users", userId));
-        const userData = userDoc.data();
-        if (!userData) throw new Error("User data not found");
-        email = userData.email;
-      }
-
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
-      const user = userCredential.user;
     } catch (error) {
       if (error instanceof FirebaseError)
         handleLoginError(error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleForgotUsername = () => {
-    router.push("/forgot_username");
   };
 
   return (
@@ -109,15 +84,16 @@ export default function Login() {
         <TouchableWithoutFeedback onPress={Platform.OS != "web" ? Keyboard.dismiss : ()=>{}}>
           <View style={styles.inner}>
             <LogoHeader useIcon={true}/>
-            <TextInputWithLink
-              label="Username or Email Address"
-              value={identifier}
-              onChangeValue={setIdentifier}
-              onForgot={handleForgotUsername}
-              keyboardType="email-address"
-              errorKey="identifier"
-              errorObj={errors}
-            />
+            <View>
+              <TextInput
+                label="Email Address"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                mode="outlined"
+              />
+              <HelperText type="error"> {errors.email}</HelperText>
+            </View>
             <TextInputWithLink
               label="Password"
               value={password}

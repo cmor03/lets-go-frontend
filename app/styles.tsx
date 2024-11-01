@@ -20,6 +20,9 @@ export default StyleSheet.create({
     underline: {
         textDecorationLine: "underline"
     },
+    boldText: {
+        fontWeight: "bold"
+    },
     flexRow: {
         display: "flex",
         flexDirection: "row",
@@ -31,5 +34,33 @@ export default StyleSheet.create({
     centeredContainer: {
         display: "flex",
         justifyContent: "center"
+    },
+    eventFooter: {
+        display: "flex",
+        flexDirection: "row",
+        marginTop: "auto",
+        gap: 8,
+        padding: 8,
+    },
+    eventLocationInfo: {
+        display: "flex",
+        flexDirection: "row",
+        gap: 8,
+        alignItems: "center"
+    }, 
+    attendantAvatarBox: {
+        display: "flex",
+        flexDirection: "row",
+        paddingLeft: 12
+    },
+    attendantAvatar: {
+        marginLeft: -12,
+        borderRadius: 17
+    },
+    attendants: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8
     }
 });

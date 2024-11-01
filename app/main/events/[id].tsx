@@ -1,11 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
-import { FontAwesome } from '@expo/vector-icons';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
+  Image
+} from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../../firebase";
+import { Avatar, Button, Divider, Icon, Surface, Text, useTheme } from "react-native-paper";
+import styles from "../../styles";
 
 interface Event {
   id: string;
@@ -26,260 +44,74 @@ interface UserInfo {
 }
 
 export default function EventDetails() {
-  const { id } = useLocalSearchParams();
-  const [event, setEvent] = useState<Event | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
-  const [editedEvent, setEditedEvent] = useState<Event | null>(null);
-  const [userInfos, setUserInfos] = useState<UserInfo[]>([]);
+  const { id: string } = useLocalSearchParams();
+  const theme = useTheme();
 
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const eventDoc = await getDoc(doc(db, 'events', id as string));
-        if (eventDoc.exists()) {
-          const eventData = { id: eventDoc.id, ...eventDoc.data() } as Event;
-          setEvent(eventData);
-          setEditedEvent(eventData);
-          fetchUsernames(eventData.invitedUsers);
-        } else {
-          console.log('No such event!');
-        }
-      } catch (error) {
-        console.error('Error fetching event: ', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvent();
-  }, [id]);
-
-  const fetchUsernames = async (uids: string[]) => {
-    const usersRef = collection(db, 'users');
-    const q = query(usersRef, where('uid', 'in', uids));
-    const querySnapshot = await getDocs(q);
-    const userInfos: UserInfo[] = [];
-    querySnapshot.forEach((doc) => {
-      const userData = doc.data();
-      userInfos.push({ uid: userData.uid, username: userData.username });
-    });
-    setUserInfos(userInfos);
-  };
-
-  const handleRemoveUser = (uidToRemove: string) => {
-    if (!editedEvent) return;
-    const updatedInvitedUsers = editedEvent.invitedUsers.filter(uid => uid !== uidToRemove);
-    setEditedEvent({ ...editedEvent, invitedUsers: updatedInvitedUsers });
-    setUserInfos(userInfos.filter(info => info.uid !== uidToRemove));
-  };
-
-  const handleEdit = () => {
-    setEditing(true);
-  };
-
-  const handleSave = async () => {
-    if (!editedEvent) return;
-
-    try {
-      await updateDoc(doc(db, 'events', id as string), {
-        eventTitle: editedEvent.eventTitle,
-        description: editedEvent.description,
-        locations: editedEvent.locations,
-        invitedUsers: editedEvent.invitedUsers,
-      });
-      setEvent(editedEvent);
-      setEditing(false);
-      Alert.alert('Success', 'Event updated successfully');
-    } catch (error) {
-      console.error('Error updating event: ', error);
-      Alert.alert('Error', 'Failed to update event');
-    }
-  };
-
-  const handleCancel = () => {
-    setEditedEvent(event);
-    setEditing(false);
-  };
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
-  }
-
-  if (!event || !editedEvent) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Event not found</Text>
-      </View>
-    );
-  }
+  
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <LinearGradient
-        colors={['#121212', '#1E1E1E']}
-        style={styles.gradient}
+    <KeyboardAvoidingView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="always"
       >
-        <View style={styles.contentContainer}>
-          <Text style={styles.title}>
-            {editing ? (
-              <TextInput
-                style={styles.input}
-                value={editedEvent.eventTitle}
-                onChangeText={(text) => setEditedEvent({ ...editedEvent, eventTitle: text })}
-              />
-            ) : (
-              event.eventTitle
-            )}
-          </Text>
-          <Text style={styles.label}>Description:</Text>
-          {editing ? (
-            <TextInput
-              style={[styles.input, styles.multilineInput]}
-              multiline
-              value={editedEvent.description}
-              onChangeText={(text) => setEditedEvent({ ...editedEvent, description: text })}
-            />
-          ) : (
-            <Text style={styles.text}>{event.description}</Text>
-          )}
-          <Text style={styles.label}>Creator ID:</Text>
-          <Text style={styles.text}>{event.creatorId}</Text>
-          <Text style={styles.label}>Locations:</Text>
-          {editing ? (
-            editedEvent.locations.map((location, index) => (
-              <TextInput
-                key={index}
-                style={styles.input}
-                value={location}
-                onChangeText={(text) => {
-                  const newLocations = [...editedEvent.locations];
-                  newLocations[index] = text;
-                  setEditedEvent({ ...editedEvent, locations: newLocations });
-                }}
-              />
-            ))
-          ) : (
-            event.locations.map((location, index) => (
-              <Text key={index} style={styles.text}>{location}</Text>
-            ))
-          )}
-          <Text style={styles.label}>Invited Users:</Text>
-          {editing ? (
-            userInfos.map((userInfo) => (
-              <View key={userInfo.uid} style={styles.userItem}>
-                <Text style={styles.text}>{userInfo.username}</Text>
-                <TouchableOpacity onPress={() => handleRemoveUser(userInfo.uid)}>
-                  <FontAwesome name="times" size={20} color="#FF6347" />
-                </TouchableOpacity>
+        <TouchableWithoutFeedback
+          onPress={Platform.OS != "web" ? Keyboard.dismiss : () => {}}
+        >
+          <View style={styles.inner}>
+            <View>
+              <Text variant="displayMedium" style={styles.boldText}>Event Name</Text>
+              <View style={styles.eventLocationInfo}>
+                <Icon size={18} source="map-marker"/>
+                <Text variant="bodyLarge">1310 Maple St, Golden, CO 80401</Text>
               </View>
-            ))
-          ) : (
-            userInfos.map((userInfo) => (
-              <Text key={userInfo.uid} style={styles.text}>{userInfo.username}</Text>
-            ))
-          )}
-          <Text style={styles.label}>Created At:</Text>
-          <Text style={styles.text}>{new Date(event.createdAt.seconds * 1000).toLocaleString()}</Text>
-          
-          {editing ? (
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button} onPress={handleSave}>
-                <Text style={styles.buttonText}>Save</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
+              <Text variant="bodyLarge" style={{color: theme.colors.tertiary}} numberOfLines={1}>Jun 10, 2024 9:41 AM</Text>
             </View>
-          ) : (
-            <TouchableOpacity style={styles.button} onPress={handleEdit}>
-              <Text style={styles.buttonText}>Edit</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </LinearGradient>
-    </ScrollView>
+            <Divider />
+            <Image
+              style={{width: "auto", height: 200, borderRadius: theme.roundness}}
+              source={{
+                uri: 'https://imgur.com/UJnKfWR.jpg',
+              }}
+            />
+            <View style={styles.attendants}>
+              <View style={styles.attendantAvatarBox}>
+                <Surface style={styles.attendantAvatar}><Avatar.Icon size={34} icon="account"/></Surface>
+                <Surface style={styles.attendantAvatar}><Avatar.Icon size={34} icon="account"/></Surface>
+                <Surface style={styles.attendantAvatar}><Avatar.Icon size={34} icon="account"/></Surface>
+                <Surface style={styles.attendantAvatar}><Avatar.Icon size={34} icon="account"/></Surface>
+                <Surface style={styles.attendantAvatar}><Avatar.Icon size={34} icon="account"/></Surface>
+              </View>
+              <Text variant="bodyLarge">+12 more</Text>
+            </View>
+            <Text variant="bodyLarge">{"Lorem ipsum odor amet, consectetuer adipiscing elit. Morbi sollicitudin inceptos arcu adipiscing dui facilisis porttitor potenti. Phasellus eu faucibus mollis volutpat accumsan class magna. Ante sed rutrum primis etiam ipsum ut magna. Praesent nullam curae imperdiet, posuere proin a. Interdum tempus morbi iaculis nibh euismod diam nam malesuada. Nibh gravida vestibulum posuere; montes sit semper eu. Cras tincidunt sapien magna placerat placerat vel sollicitudin fames. Sed lacus parturient feugiat porttitor aptent sapien torquent. Litora neque donec praesent conubia nisi.\n\nUrna fames facilisis arcu curae; pretium morbi. Pulvinar in facilisi felis sed a ad ornare. Cubilia ullamcorper massa hendrerit suscipit maecenas quam tellus a. Sociosqu nec porttitor tristique nostra tempor faucibus. Interdum ipsum scelerisque duis leo per etiam quis sodales. Hendrerit placerat ipsum fermentum cubilia eget sit. Tortor morbi ante feugiat ut parturient; fermentum euismod. Urna vestibulum non nisi enim libero.\n\nVel risus tellus sed massa rhoncus duis risus. Penatibus penatibus nec arcu taciti primis? Fusce netus primis iaculis conubia eleifend accumsan. Finibus parturient et consectetur blandit consectetur. Gravida nam sem quis felis elementum lectus sem libero. Blandit magna finibus maecenas efficitur maecenas aenean mauris feugiat auctor. Cras nibh quisque condimentum taciti porttitor sem odio.\n\nInteger inceptos at gravida nostra magnis mi cras. Arcu rutrum himenaeos at sagittis, volutpat rhoncus. Class amet imperdiet cras venenatis arcu; pellentesque ultricies. Elit magnis feugiat est suspendisse sagittis facilisi vehicula amet tempor. Faucibus sem imperdiet, tristique ligula maecenas facilisi amet penatibus. Fames morbi natoque ullamcorper aptent porttitor convallis pellentesque. Ornare semper fringilla molestie ultrices ridiculus etiam.\n\nNam hendrerit praesent integer curabitur arcu; taciti aenean enim. Morbi laoreet sem sapien placerat morbi gravida integer. Nullam lobortis commodo ultrices mollis auctor purus. Velit risus condimentum class mus amet nascetur integer. Porta semper nisl maecenas cras inceptos posuere. Enim platea eu fames dui maecenas montes."}</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+      <Surface style={styles.eventFooter}>
+        <Button
+          icon="account-voice"
+          mode="contained"
+          rippleColor={theme.colors.primary}
+          onPress={() => null}
+          style={styles.flexGrow}
+        >
+          RSVP
+        </Button>
+        <Button
+          icon="directions"
+          mode="contained-tonal"
+          rippleColor={theme.colors.primary}
+          onPress={() => null}
+          style={styles.flexGrow}
+        >
+          Get Directions
+        </Button>
+      </Surface>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#121212',
-  },
-  gradient: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#007AFF',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  label: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginTop: 15,
-    marginBottom: 5,
-  },
-  text: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    marginBottom: 10,
-  },
-  input: {
-    height: 50,
-    borderColor: '#1E1E1E',
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    backgroundColor: '#1E1E1E',
-    color: '#FFFFFF',
-  },
-  multilineInput: {
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    marginTop: 20,
-  },
-  cancelButton: {
-    backgroundColor: '#FF6347',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  userItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-});

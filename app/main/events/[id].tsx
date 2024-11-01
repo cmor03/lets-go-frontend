@@ -9,7 +9,8 @@ import {
   Platform,
   Keyboard,
   KeyboardAvoidingView,
-  Image
+  Image,
+  Linking
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import {
@@ -62,6 +63,20 @@ export default function EventDetails() {
     fetchEvent()
       .catch(console.error);
   }, [id]);
+
+  const openMaps = () => {
+    if (Platform.OS == "web") return;
+    
+    const scheme = Platform.select({ ios: 'maps://0,0?q=', android: 'geo:0,0?q=' });
+    const latLng = `${39.75344474079665},${-105.22940811833696}`;
+    const label = event?.eventTitle;
+    const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`
+    });
+        
+    Linking.openURL(url!).catch(console.error);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -120,7 +135,7 @@ export default function EventDetails() {
           icon="directions"
           mode="contained-tonal"
           rippleColor={theme.colors.primary}
-          onPress={() => null}
+          onPress={openMaps}
           style={styles.flexGrow}
         >
           Get Directions

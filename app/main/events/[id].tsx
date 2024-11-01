@@ -44,10 +44,24 @@ interface UserInfo {
 }
 
 export default function EventDetails() {
-  const { id: string } = useLocalSearchParams();
+  const { id } = useLocalSearchParams<{id: string}>();
+  const [ event, setEvent ] = useState<Event | undefined>(undefined);
   const theme = useTheme();
 
-  
+  useEffect(() => {
+    const fetchEvent = async () => {
+      const eventDoc = await getDoc(doc(db, 'events', id as string));
+      if (eventDoc.exists()) {
+        const eventData = { id: eventDoc.id, ...eventDoc.data() } as Event;
+        setEvent(eventData);
+      } else {
+        console.log('No such event!');
+      }
+    };
+
+    fetchEvent()
+      .catch(console.error);
+  }, [id]);
 
   return (
     <KeyboardAvoidingView
@@ -64,7 +78,7 @@ export default function EventDetails() {
         >
           <View style={styles.inner}>
             <View>
-              <Text variant="displayMedium" style={styles.boldText}>Event Name</Text>
+              <Text variant="displayMedium" style={styles.boldText}>{event ? event.eventTitle : " "}</Text>
               <View style={styles.eventLocationInfo}>
                 <Icon size={18} source="map-marker"/>
                 <Text variant="bodyLarge">1310 Maple St, Golden, CO 80401</Text>
@@ -88,7 +102,7 @@ export default function EventDetails() {
               </View>
               <Text variant="bodyLarge">+12 more</Text>
             </View>
-            <Text variant="bodyLarge">{"Lorem ipsum odor amet, consectetuer adipiscing elit. Morbi sollicitudin inceptos arcu adipiscing dui facilisis porttitor potenti. Phasellus eu faucibus mollis volutpat accumsan class magna. Ante sed rutrum primis etiam ipsum ut magna. Praesent nullam curae imperdiet, posuere proin a. Interdum tempus morbi iaculis nibh euismod diam nam malesuada. Nibh gravida vestibulum posuere; montes sit semper eu. Cras tincidunt sapien magna placerat placerat vel sollicitudin fames. Sed lacus parturient feugiat porttitor aptent sapien torquent. Litora neque donec praesent conubia nisi.\n\nUrna fames facilisis arcu curae; pretium morbi. Pulvinar in facilisi felis sed a ad ornare. Cubilia ullamcorper massa hendrerit suscipit maecenas quam tellus a. Sociosqu nec porttitor tristique nostra tempor faucibus. Interdum ipsum scelerisque duis leo per etiam quis sodales. Hendrerit placerat ipsum fermentum cubilia eget sit. Tortor morbi ante feugiat ut parturient; fermentum euismod. Urna vestibulum non nisi enim libero.\n\nVel risus tellus sed massa rhoncus duis risus. Penatibus penatibus nec arcu taciti primis? Fusce netus primis iaculis conubia eleifend accumsan. Finibus parturient et consectetur blandit consectetur. Gravida nam sem quis felis elementum lectus sem libero. Blandit magna finibus maecenas efficitur maecenas aenean mauris feugiat auctor. Cras nibh quisque condimentum taciti porttitor sem odio.\n\nInteger inceptos at gravida nostra magnis mi cras. Arcu rutrum himenaeos at sagittis, volutpat rhoncus. Class amet imperdiet cras venenatis arcu; pellentesque ultricies. Elit magnis feugiat est suspendisse sagittis facilisi vehicula amet tempor. Faucibus sem imperdiet, tristique ligula maecenas facilisi amet penatibus. Fames morbi natoque ullamcorper aptent porttitor convallis pellentesque. Ornare semper fringilla molestie ultrices ridiculus etiam.\n\nNam hendrerit praesent integer curabitur arcu; taciti aenean enim. Morbi laoreet sem sapien placerat morbi gravida integer. Nullam lobortis commodo ultrices mollis auctor purus. Velit risus condimentum class mus amet nascetur integer. Porta semper nisl maecenas cras inceptos posuere. Enim platea eu fames dui maecenas montes."}</Text>
+            <Text variant="bodyLarge">{event ? event.description : " "}</Text>
           </View>
         </TouchableWithoutFeedback>
       </ScrollView>

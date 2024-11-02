@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Icon, useTheme } from 'react-native-paper';
+import { Icon, useTheme, BottomNavigation } from 'react-native-paper';
 
 export default function TabLayout() {
   const theme = useTheme();

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome } from '@expo/vector-icons';

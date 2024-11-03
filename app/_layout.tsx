@@ -1,32 +1,15 @@
-import { router, Slot, Stack } from "expo-router";
-import { useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
-import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "./firebase";
-import Loading from "./loading";
+import { Slot } from "expo-router";
+import { MD3LightTheme, PaperProvider } from "react-native-paper";
+import AuthProvider from "./AuthProvider";
 
 export default function RootLayout() {
   const paperTheme = MD3LightTheme;
-  const [user, loading] = useAuthState(auth);
-
-  useEffect(() => {
-    if (!loading) {
-      if (user) {
-        router.replace("/events")
-      } else {
-        router.replace("/(tabs)")
-      }
-    }
-  }, [user, loading])
-
-  if (loading) {
-    return <Loading />
-  }
 
   return (
-    <PaperProvider theme={paperTheme}>
-      <Slot />
-    </PaperProvider>
+    <AuthProvider>
+      <PaperProvider theme={paperTheme}>
+        <Slot />
+      </PaperProvider>
+    </AuthProvider>
   );
 }

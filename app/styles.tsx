@@ -11,7 +11,7 @@ export default StyleSheet.create({
         flex: 1,
         display: "flex",
         padding: 24,
-        gap: 8
+        gap: 12
     },
     loginTextInputWithLink: {
         display: "flex",
@@ -42,7 +42,7 @@ export default StyleSheet.create({
         gap: 8,
         padding: 8,
     },
-    eventLocationInfo: {
+    eventInfoBar: {
         display: "flex",
         flexDirection: "row",
         gap: 8,
@@ -58,6 +58,15 @@ export default StyleSheet.create({
         borderRadius: 17
     },
     attendants: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8
+    },
+    eventHeader: {
+        gap: 8,
+    },
+    organizerBlock: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",

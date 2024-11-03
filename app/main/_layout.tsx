@@ -10,7 +10,7 @@ export default function StackLayout() {
     return <Loading />
   
   if (!user)
-    return <Redirect href="/(tabs)/" />;
+    return <Redirect href="/auth/(tabs)/" />;
 
   return (
     <Stack>

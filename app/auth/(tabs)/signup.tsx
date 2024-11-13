@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from "react-native";
-import { auth, db } from "../firebase";
+import { auth, db } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import { useRouter } from "expo-router";
@@ -17,7 +17,7 @@ import DateTimePicker, {
   DateTimePickerAndroid,
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import styles from "../styles";
+import styles from "../../styles";
 import { LogoHeader } from "./index";
 import { Button, HelperText, TextInput, useTheme } from "react-native-paper";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -99,6 +99,7 @@ const Signup = () => {
       await setDoc(doc(db, "usernames", username), { uid: user.uid });
 
       console.log("User created successfully:", user.uid);
+      router.push("/main/");
     } catch (error: any) {
       console.error("Signup error:", error);
       if (error.code === "auth/email-already-in-use") {

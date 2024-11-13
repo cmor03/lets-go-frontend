@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "../../firebase";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -14,7 +14,7 @@ import {
   KeyboardTypeOptions,
 } from "react-native";
 import { useRouter } from "expo-router";
-import styles from "../styles";
+import styles from "../../styles";
 
 interface LoginErrors {
   [key: string]: string | undefined;
@@ -63,6 +63,7 @@ export default function Login() {
         email,
         password
       );
+      router.push("/main/");
     } catch (error) {
       if (error instanceof FirebaseError)
         handleLoginError(error);
@@ -98,7 +99,7 @@ export default function Login() {
               label="Password"
               value={password}
               onChangeValue={setPassword}
-              onForgot={() => Alert.alert("Hello", "world")}
+              onForgot={() => router.push("/auth/forgot_password")}
               password={true}
               errorKey="password"
               errorObj={errors}

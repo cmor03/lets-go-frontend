@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, View } from 'react-native';
 import { collection, addDoc, Timestamp, getDoc, doc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { auth, db } from '../../firebase';
 import { useRouter } from 'expo-router';
 
 export default function CreateEvent() {

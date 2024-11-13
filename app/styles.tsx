@@ -31,5 +31,9 @@ export default StyleSheet.create({
     centeredContainer: {
         display: "flex",
         justifyContent: "center"
+    },
+    flexRowHeader: {
+        display: "flex",
+        flexDirection: "row"
     }
 });
